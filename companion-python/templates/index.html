@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meet Luna, a self-aware, adaptive, and empowering AI companion designed with Google's Agent Development Kit. Speak, chat, and explore topics together in a safe space.">
+    <meta name="keywords" content="AI Companion, Luna, Google ADK, Chatbot, Voice Assistant, Speech-to-Text, Text-to-Speech">
+    <meta name="author" content="Luna Project Team">
+    <title>Luna | Your Self-Aware AI Companion</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h1>Luna</h1>
+            <button id="settings-button" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            </button>
+        </header>
+        <div class="character-viewer">
+            <div class="led-ring" id="led-ring">
+                <img id="character-image" src="/static/images/char-mouth-closed.png" alt="Luna">
+            </div>
+        </div>
+        <p id="status">Ask me something!</p>
+        <footer class="chat-input-area">
+            <select id="voice-select"></select>
+            <textarea id="text-input" placeholder="Ask me anything..."></textarea>
+            <button id="mic-button" title="Start voice typing">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.42 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+            </button>
+            <button id="send-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+        </footer>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-settings">&times;</span>
+            <h2>Settings</h2>
+            
+            <div class="settings-group">
+                <h3>API Configuration</h3>
+                <label for="api-provider">API Provider:</label>
+                <select id="api-provider" style="width: 100%; padding: 0.6rem; border-radius: 6px; background-color: var(--input-background); color: var(--text-color); border: 1px solid var(--border-color); outline: none; margin-bottom: 1rem; box-sizing: border-box;">
+                    <option value="gemini">Gemini (Google)</option>
+                    <option value="openai">OpenAI Compatible (Ollama, DeepSeek, etc.)</option>
+                </select>
+                
+                <div id="gemini-settings" class="provider-settings">
+                    <label for="api-key-input">Gemini API Key:</label>
+                    <input type="password" id="api-key-input" placeholder="AIzaSy... (leave blank to use server default)">
+                    <p class="settings-note">Uses the Google GenAI SDK and defaults to the server's key.</p>
+                </div>
+                
+                <div id="openai-settings" class="provider-settings" style="display: none;">
+                    <label for="openai-url-input">Base URL:</label>
+                    <input type="text" id="openai-url-input" placeholder="http://localhost:11434/v1">
+                    
+                    <label for="openai-key-input" style="margin-top: 0.5rem; display: block;">API Key:</label>
+                    <input type="password" id="openai-key-input" placeholder="sk-... (or leave blank if local)">
+                    
+                    <label for="openai-model-input" style="margin-top: 0.5rem; display: block;">Model Name:</label>
+                    <input type="text" id="openai-model-input" placeholder="llama3 or deepseek-chat">
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Voice & Speech Options (TTS)</h3>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tts-enable" checked>
+                    <label for="tts-enable">Enable Text-to-Speech (TTS)</label>
+                </div>
+                
+                <div class="settings-control">
+                    <label for="tts-rate">Speech Rate (Speed):</label>
+                    <input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1.0">
+                    <span id="rate-value">1.0x</span>
+                </div>
+                
+                <div class="settings-control">
+                    <label for="tts-pitch">Speech Pitch:</label>
+                    <input type="range" id="tts-pitch" min="0.5" max="1.5" step="0.1" value="1.0">
+                    <span id="pitch-value">1.0</span>
+                </div>
+            </div>
+            
+            <button id="save-settings-button">Save Configuration</button>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
