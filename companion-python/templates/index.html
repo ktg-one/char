@@ -16,6 +16,11 @@
     <div class="chat-container">
         <header class="chat-header">
             <h1>Luna</h1>
+            <button id="emotes-button" class="icon-button" title="Emotes">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </button>
             <button id="settings-button" title="Settings">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
             </button>
@@ -48,17 +53,17 @@
                 <h3>API Configuration</h3>
                 <label for="api-provider">API Provider:</label>
                 <select id="api-provider" style="width: 100%; padding: 0.6rem; border-radius: 6px; background-color: var(--input-background); color: var(--text-color); border: 1px solid var(--border-color); outline: none; margin-bottom: 1rem; box-sizing: border-box;">
+                    <option value="openai" selected>OpenAI Compatible (Ollama, DeepSeek, etc.)</option>
                     <option value="gemini">Gemini (Google)</option>
-                    <option value="openai">OpenAI Compatible (Ollama, DeepSeek, etc.)</option>
                 </select>
                 
-                <div id="gemini-settings" class="provider-settings">
+                <div id="gemini-settings" class="provider-settings" style="display: none;">
                     <label for="api-key-input">Gemini API Key:</label>
                     <input type="password" id="api-key-input" placeholder="AIzaSy... (leave blank to use server default)">
                     <p class="settings-note">Uses the Google GenAI SDK and defaults to the server's key.</p>
                 </div>
                 
-                <div id="openai-settings" class="provider-settings" style="display: none;">
+                <div id="openai-settings" class="provider-settings">
                     <label for="openai-url-input">Base URL:</label>
                     <input type="text" id="openai-url-input" placeholder="http://localhost:11434/v1">
                     
@@ -66,7 +71,7 @@
                     <input type="password" id="openai-key-input" placeholder="sk-... (or leave blank if local)">
                     
                     <label for="openai-model-input" style="margin-top: 0.5rem; display: block;">Model Name:</label>
-                    <input type="text" id="openai-model-input" placeholder="llama3 or deepseek-chat">
+                    <input type="text" id="openai-model-input" placeholder="llama3.2 or qwen2.5 or deepseek-chat">
                 </div>
             </div>
             
@@ -91,6 +96,51 @@
             </div>
             
             <button id="save-settings-button">Save Configuration</button>
+        </div>
+    </div>
+
+    <!-- Emote Manager Modal -->
+    <div id="emote-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Emotes</h2>
+                <button id="close-emote-modal" class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="emote-list"></div>
+                <button id="add-emote-button" class="add-button">+ Add Custom Emote</button>
+                
+                <!-- Add/Edit Form (hidden by default) -->
+                <div id="emote-form" class="emote-form" style="display: none;">
+                    <h3 id="form-title">Add Custom Emote</h3>
+                    <div class="form-group">
+                        <label for="emote-name">Emote Name</label>
+                        <input type="text" id="emote-name" placeholder="e.g., excited">
+                    </div>
+                    <div class="form-group">
+                        <label for="emote-keywords">Keywords (comma-separated)</label>
+                        <input type="text" id="emote-keywords" placeholder="e.g., excited, wow, amazing">
+                    </div>
+                    <div class="form-group">
+                        <label>Mouth Closed Image</label>
+                        <input type="file" id="emote-closed-image" accept="image/*">
+                        <img id="emote-closed-preview" class="image-preview" style="display: none;">
+                    </div>
+                    <div class="form-group">
+                        <label>Mouth Open Image</label>
+                        <input type="file" id="emote-open-image" accept="image/*">
+                        <img id="emote-open-preview" class="image-preview" style="display: none;">
+                    </div>
+                    <div class="form-group">
+                        <label for="emote-color">LED Color (optional)</label>
+                        <input type="color" id="emote-color" value="#00FFFF">
+                    </div>
+                    <div class="form-actions">
+                        <button id="save-emote" class="save-button">Save</button>
+                        <button id="cancel-emote" class="cancel-button">Cancel</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
