@@ -322,6 +322,11 @@ def create_emote():
 @app.route('/api/emotes/<name>', methods=['DELETE'])
 def delete_emote(name):
     """Delete a custom emote."""
+    # Check if it's a built-in emote
+    built_in = ['neutral', 'happy', 'sad']
+    if name in built_in:
+        return jsonify({'error': 'Cannot delete built-in emote'}), 400
+
     emotes = load_emotes()
 
     if not any(e['name'] == name for e in emotes.get('custom', [])):
