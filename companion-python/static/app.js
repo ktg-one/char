@@ -8,22 +8,277 @@ document.addEventListener('DOMContentLoaded', () => {
     const ledRing = document.getElementById('led-ring');
     const micButton = document.getElementById('mic-button');
 
+    // Emote Manager
+    const emotesButton = document.getElementById('emotes-button');
+    const emoteModal = document.getElementById('emote-modal');
+    const closeEmoteModal = document.getElementById('close-emote-modal');
+    const emoteList = document.getElementById('emote-list');
+    const addEmoteButton = document.getElementById('add-emote-button');
+    const emoteForm = document.getElementById('emote-form');
+    const formTitle = document.getElementById('form-title');
+    const emoteNameInput = document.getElementById('emote-name');
+    const emoteKeywordsInput = document.getElementById('emote-keywords');
+    const emoteClosedImage = document.getElementById('emote-closed-image');
+    const emoteOpenImage = document.getElementById('emote-open-image');
+    const emoteClosedPreview = document.getElementById('emote-closed-preview');
+    const emoteOpenPreview = document.getElementById('emote-open-preview');
+    const emoteColorInput = document.getElementById('emote-color');
+    const saveEmoteButton = document.getElementById('save-emote');
+    const cancelEmoteButton = document.getElementById('cancel-emote');
+
+    let customEmotes = [];
+
+    // Load custom emotes from localStorage
+    const loadCustomEmotes = () => {
+        const stored = localStorage.getItem('custom_emotes');
+        customEmotes = stored ? JSON.parse(stored) : [];
+    };
+
+    // Save custom emotes to localStorage
+    const saveCustomEmotesToStorage = () => {
+        localStorage.setItem('custom_emotes', JSON.stringify(customEmotes));
+    };
+
+    // Fetch emotes from backend
+    const fetchEmotes = async () => {
+        try {
+            const resp = await fetch('/api/emotes');
+            if (resp.ok) {
+                const data = await resp.json();
+                customEmotes = data.custom || [];
+                saveCustomEmotesToStorage();
+            }
+        } catch (err) {
+            console.error('Failed to fetch emotes:', err);
+        }
+    };
+
+    // Render emote list
+    const renderEmoteList = () => {
+        emoteList.innerHTML = '';
+        
+        // Built-in emotes
+        const builtIn = ['neutral', 'happy', 'sad'];
+        builtIn.forEach(name => {
+            const item = document.createElement('div');
+            item.className = 'emote-item';
+            item.innerHTML = `
+                <img src="/static/images/char-${name}-mouth-closed.png" alt="${name}">
+                <div class="emote-info">
+                    <div class="emote-name">${name}</div>
+                </div>
+                <span class="lock-icon" title="Built-in emote">🔒</span>
+            `;
+            emoteList.appendChild(item);
+        });
+        
+        // Custom emotes
+        customEmotes.forEach(emote => {
+            const item = document.createElement('div');
+            item.className = 'emote-item';
+            item.innerHTML = `
+                <img src="${emote.images.closed}" alt="${emote.name}">
+                <div class="emote-info">
+                    <div class="emote-name">${emote.name}</div>
+                    <div class="emote-keywords">
+                        ${emote.keywords.map(k => `<span class="keyword-pill">${k}</span>`).join('')}
+                    </div>
+                </div>
+                <button class="delete-button" data-name="${emote.name}" title="Delete emote">🗑️</button>
+            `;
+            emoteList.appendChild(item);
+        });
+        
+        // Add delete listeners
+        document.querySelectorAll('.delete-button').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const name = e.target.dataset.name;
+                if (confirm(`Delete emote "${name}"?`)) {
+                    await deleteEmote(name);
+                }
+            });
+        });
+    };
+
+    // Delete emote
+    const deleteEmote = async (name) => {
+        try {
+            const resp = await fetch(`/api/emotes/${name}`, { method: 'DELETE' });
+            if (resp.ok) {
+                customEmotes = customEmotes.filter(e => e.name !== name);
+                saveCustomEmotesToStorage();
+                renderEmoteList();
+            }
+        } catch (err) {
+            console.error('Failed to delete emote:', err);
+        }
+    };
+
+    // Show/hide form
+    const showForm = (editEmote = null) => {
+        emoteForm.style.display = 'block';
+        addEmoteButton.style.display = 'none';
+        
+        if (editEmote) {
+            formTitle.textContent = 'Edit Custom Emote';
+            emoteNameInput.value = editEmote.name;
+            emoteKeywordsInput.value = editEmote.keywords.join(', ');
+            emoteColorInput.value = editEmote.color || '#00FFFF';
+            emoteClosedPreview.src = editEmote.images.closed;
+            emoteClosedPreview.style.display = 'block';
+            emoteOpenPreview.src = editEmote.images.open;
+            emoteOpenPreview.style.display = 'block';
+        } else {
+            formTitle.textContent = 'Add Custom Emote';
+            emoteNameInput.value = '';
+            emoteKeywordsInput.value = '';
+            emoteColorInput.value = '#00FFFF';
+            emoteClosedPreview.style.display = 'none';
+            emoteOpenPreview.style.display = 'none';
+        }
+    };
+
+    const hideForm = () => {
+        emoteForm.style.display = 'none';
+        addEmoteButton.style.display = 'block';
+        emoteNameInput.value = '';
+        emoteKeywordsInput.value = '';
+        emoteClosedImage.value = '';
+        emoteOpenImage.value = '';
+        emoteClosedPreview.style.display = 'none';
+        emoteOpenPreview.style.display = 'none';
+    };
+
+    // Image preview handlers
+    emoteClosedImage.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                emoteClosedPreview.src = ev.target.result;
+                emoteClosedPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    emoteOpenImage.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                emoteOpenPreview.src = ev.target.result;
+                emoteOpenPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Save emote
+    saveEmoteButton.addEventListener('click', async () => {
+        const name = emoteNameInput.value.trim();
+        const keywords = emoteKeywordsInput.value.split(',').map(k => k.trim()).filter(k => k);
+        const color = emoteColorInput.value;
+        
+        if (!name) {
+            alert('Emote name is required');
+            return;
+        }
+        
+        if (!emoteClosedImage.files[0] || !emoteOpenImage.files[0]) {
+            alert('Both mouth images are required');
+            return;
+        }
+        
+        try {
+            // Upload images
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('closed', emoteClosedImage.files[0]);
+            formData.append('open', emoteOpenImage.files[0]);
+            
+            const uploadResp = await fetch('/api/emotes/upload', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!uploadResp.ok) {
+                throw new Error('Failed to upload images');
+            }
+            
+            // Create emote
+            const createResp = await fetch('/api/emotes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, keywords, color })
+            });
+            
+            if (!createResp.ok) {
+                const err = await createResp.json();
+                throw new Error(err.error || 'Failed to create emote');
+            }
+            
+            const newEmote = await createResp.json();
+            customEmotes.push(newEmote);
+            saveCustomEmotesToStorage();
+            renderEmoteList();
+            hideForm();
+        } catch (err) {
+            alert(err.message);
+        }
+    });
+
+    // Cancel form
+    cancelEmoteButton.addEventListener('click', hideForm);
+
+    // Add emote button
+    addEmoteButton.addEventListener('click', () => showForm());
+
+    // Modal controls
+    emotesButton.addEventListener('click', () => {
+        renderEmoteList();
+        emoteModal.classList.add('open');
+    });
+
+    closeEmoteModal.addEventListener('click', () => {
+        emoteModal.classList.remove('open');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === emoteModal) {
+            emoteModal.classList.remove('open');
+        }
+    });
+
     function getImagePath(emote, isOpen) {
         const suffix = isOpen ? 'open' : 'closed';
-        if (emote === 'neutral' || !['happy', 'sad'].includes(emote)) {
-            return `/static/images/char-mouth-${suffix}.png?v=${sessionId}`;
+        
+        // Check custom emotes first
+        const customEmote = customEmotes.find(e => e.name === emote);
+        if (customEmote) {
+            return isOpen ? customEmote.images.open : customEmote.images.closed;
         }
-        return `/static/images/char-${emote}-mouth-${suffix}.png?v=${sessionId}`;
+        
+        // Fall back to built-in emotes
+        return `/static/images/char-mouth-${suffix}.png?v=${sessionId}`;
     }
 
-    // Apply cache-busted source immediately and preload images
-    characterImage.src = getImagePath('neutral', false);
-    ['neutral', 'happy', 'sad'].forEach(emote => {
-        const imgOpen = new Image();
-        imgOpen.src = getImagePath(emote, true);
-        const imgClosed = new Image();
-        imgClosed.src = getImagePath(emote, false);
-    });
+    // Preload all emotes (built-in + custom)
+    const preloadEmotes = () => {
+        ['neutral', 'happy', 'sad'].forEach(emote => {
+            const imgOpen = new Image();
+            imgOpen.src = getImagePath(emote, true);
+            const imgClosed = new Image();
+            imgClosed.src = getImagePath(emote, false);
+        });
+        
+        customEmotes.forEach(emote => {
+            const imgOpen = new Image();
+            imgOpen.src = emote.images.open;
+            const imgClosed = new Image();
+            imgClosed.src = emote.images.closed;
+        });
+    };
 
     let voices = [];
     let lipSyncInterval;
@@ -60,6 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let typewriterTimeout;
+    let currentAudio = null;
 
     const typewriter = (text, element, speed = 50) => {
         if (typewriterTimeout) {
@@ -95,7 +351,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const speak = (text, emote = 'neutral') => {
+    const speak = async (text, emote = 'neutral') => {
+        // Stop any previous TTS (browser or elevenlabs)
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
         if (speechSynthesis.speaking) {
             speechSynthesis.cancel();
         }
@@ -103,46 +364,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Check if TTS is enabled in settings
         const ttsEnabled = localStorage.getItem('tts_enabled') !== 'false';
-        if (!ttsEnabled) {
+        if (!ttsEnabled || !text) {
             return;
         }
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        const selectedOption = voiceSelect.selectedOptions && voiceSelect.selectedOptions[0]
-            ? voiceSelect.selectedOptions[0].getAttribute('data-name')
-            : null;
-        const selectedVoice = selectedOption ? voices.find(voice => voice.name === selectedOption) : null;
-        if (selectedVoice) {
-            utterance.voice = selectedVoice;
-        }
-
-        // Apply saved rate and pitch
-        utterance.rate = parseFloat(localStorage.getItem('tts_rate') || '1.0');
-        utterance.pitch = parseFloat(localStorage.getItem('tts_pitch') || '1.0');
 
         const openMouthImg = getImagePath(emote, true);
         const closedMouthImg = getImagePath(emote, false);
 
-        utterance.onstart = () => {
-            let mouthOpen = true;
-            characterImage.src = openMouthImg;
-            lipSyncInterval = setInterval(() => {
-                characterImage.src = mouthOpen ? openMouthImg : closedMouthImg;
-                mouthOpen = !mouthOpen;
-            }, 150);
-        };
+        try {
+            const resp = await fetch('/tts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            if (!resp.ok) {
+                throw new Error('TTS request failed');
+            }
+            const blob = await resp.blob();
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+            currentAudio = audio;
 
-        utterance.onend = () => {
-            clearInterval(lipSyncInterval);
-            characterImage.src = closedMouthImg;
-        };
+            audio.onplay = () => {
+                let mouthOpen = true;
+                characterImage.src = openMouthImg;
+                lipSyncInterval = setInterval(() => {
+                    characterImage.src = mouthOpen ? openMouthImg : closedMouthImg;
+                    mouthOpen = !mouthOpen;
+                }, 150);
+            };
 
-        utterance.onerror = () => {
-            clearInterval(lipSyncInterval);
-            characterImage.src = closedMouthImg;
-        };
+            audio.onended = () => {
+                clearInterval(lipSyncInterval);
+                characterImage.src = closedMouthImg;
+                URL.revokeObjectURL(audioUrl);
+                currentAudio = null;
+            };
 
-        speechSynthesis.speak(utterance);
+            audio.onerror = () => {
+                clearInterval(lipSyncInterval);
+                characterImage.src = closedMouthImg;
+                URL.revokeObjectURL(audioUrl);
+                currentAudio = null;
+            };
+
+            await audio.play();
+        } catch (err) {
+            console.error('ElevenLabs TTS error, falling back to browser speech:', err);
+            // Fallback to old browser TTS so it doesn't go silent
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = parseFloat(localStorage.getItem('tts_rate') || '1.0');
+            utterance.pitch = parseFloat(localStorage.getItem('tts_pitch') || '1.0');
+
+            utterance.onstart = () => {
+                let mouthOpen = true;
+                characterImage.src = openMouthImg;
+                lipSyncInterval = setInterval(() => {
+                    characterImage.src = mouthOpen ? openMouthImg : closedMouthImg;
+                    mouthOpen = !mouthOpen;
+                }, 150);
+            };
+            utterance.onend = () => {
+                clearInterval(lipSyncInterval);
+                characterImage.src = closedMouthImg;
+            };
+            utterance.onerror = () => {
+                clearInterval(lipSyncInterval);
+                characterImage.src = closedMouthImg;
+            };
+            speechSynthesis.speak(utterance);
+        }
     };
 
     const handleSendMessage = async () => {
@@ -160,11 +451,14 @@ document.addEventListener('DOMContentLoaded', () => {
         characterImage.src = getImagePath('neutral', false);
 
         try {
-            const apiProvider = localStorage.getItem('api_provider') || 'gemini';
+            const apiProvider = localStorage.getItem('api_provider') || 'openai';
             const savedApiKey = localStorage.getItem('api_key') || '';
-            const openaiUrl = localStorage.getItem('openai_url') || '';
+            let openaiUrl = localStorage.getItem('openai_url') || 'http://localhost:11434/v1';
+            if (!openaiUrl.includes('11434/v1')) {
+                openaiUrl = 'http://localhost:11434/v1';
+            }
             const openaiKey = localStorage.getItem('openai_key') || '';
-            const openaiModel = localStorage.getItem('openai_model') || '';
+            const openaiModel = localStorage.getItem('openai_model') || 'llama3.2';
 
             const response = await fetch('/chat', {
                 method: 'POST',
@@ -182,11 +476,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+            let data;
+            if (response.ok) {
+                data = await response.json();
+            } else {
+                try {
+                    const errData = await response.json();
+                    data = { response: errData.response || 'Sorry, something went wrong.' };
+                } catch {
+                    throw new Error('Network response was not ok');
+                }
             }
-
-            const data = await response.json();
             
             // Stop thinking animation and settle on the color determined by thought process
             ledRing.classList.remove('thinking');
@@ -272,6 +572,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isRecording) {
                 recognition.stop();
             } else {
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
                 if (speechSynthesis.speaking) {
                     speechSynthesis.cancel();
                 }
@@ -303,14 +607,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load saved settings
     const loadSettings = () => {
-        const provider = localStorage.getItem('api_provider') || 'gemini';
+        // Auto-migrate anyone who still has the old 'gemini' default (or no setting) to local
+        let provider = localStorage.getItem('api_provider');
+        if (!provider || provider === 'gemini') {
+            provider = 'openai';
+            localStorage.setItem('api_provider', 'openai');
+            if (!localStorage.getItem('openai_model')) {
+                localStorage.setItem('openai_model', 'llama3.2');
+            }
+        }
         apiProviderSelect.value = provider;
         toggleProviderPanels(provider);
 
+        // Always force a correct Ollama /v1 base URL for local to avoid 404s
+        // (many people have bad values in old localStorage)
+        let ollamaUrl = localStorage.getItem('openai_url') || '';
+        if (!ollamaUrl.includes('11434/v1')) {
+            ollamaUrl = 'http://localhost:11434/v1';
+            localStorage.setItem('openai_url', ollamaUrl);
+        }
         apiKeyInput.value = localStorage.getItem('api_key') || '';
-        openaiUrlInput.value = localStorage.getItem('openai_url') || '';
+        openaiUrlInput.value = ollamaUrl;
         openaiKeyInput.value = localStorage.getItem('openai_key') || '';
-        openaiModelInput.value = localStorage.getItem('openai_model') || '';
+        openaiModelInput.value = localStorage.getItem('openai_model') || 'llama3.2';
 
         ttsEnable.checked = localStorage.getItem('tts_enabled') !== 'false';
         ttsRate.value = localStorage.getItem('tts_rate') || '1.0';
@@ -379,5 +698,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 status.textContent = "Ask me something!";
             }
         }, 2000);
+    });
+
+    // Initialize emotes
+    loadCustomEmotes();
+    fetchEmotes().then(() => {
+        preloadEmotes();
+        characterImage.src = getImagePath('neutral', false);
     });
 });
