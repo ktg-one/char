@@ -97,6 +97,14 @@ def determine_emotion(message: str, response: str) -> str:
     message_lower = message.lower()
     response_lower = response.lower()
     
+    # Check custom emotes first
+    emotes = load_emotes()
+    for custom_emote in emotes.get('custom', []):
+        keywords = custom_emote.get('keywords', [])
+        if any(word in message_lower or word in response_lower for word in keywords):
+            return custom_emote['name']
+    
+    # Fall back to built-in emotes
     # Happy/cheerful/warm
     if any(word in message_lower or word in response_lower for word in ['love', 'happy', 'excited', 'joy', 'wonderful', 'great', 'awesome', 'flirt', 'smile']):
         return 'happy'
