@@ -2,7 +2,11 @@
 
 ## Overview
 
-Brownfield hardening milestone to make the flagship character (Luna) feel consistently alive through stronger personality consistency, natural visual/emote emergence, and reliable model-driven expression tags. Uses SillyTavern-inspired prompt techniques (PHI, rich mes_example, refined card, character notes, positive framing, instruct-aware construction) while preserving the existing emote runtime, custom creator UI, and keeping all character/emote formats portable for future multi-character support and Civitai adaptability. Single vertical MVP slice: one hardened Luna that demonstrates the "alive companion" core value.
+Brownfield hardening milestone to make the flagship character (and future characters) feel consistently alive with strong visual/emote emergence. Uses SillyTavern-inspired prompt techniques (PHI, rich mes_example, refined card, character notes, positive framing, instruct-aware construction) while preserving the existing emote runtime, custom creator UI, and keeping all character/emote formats portable for multi-character support, Civitai assets, and future GIF/animation.
+
+**Phase 1 is the critical foundation**: reliable model-driven visual layer (the "missing embodiment" for roleplay). This enables the larger ambition of immersive story-driven characters and famous/IP characters that "kill it" visually.
+
+Longer-term platform vision (user direction): immersive story-driven characters, famous IPs, and roadmap from static PNG emote pairs into GIFs/animated expressions for superior lip-sync and emotional presence. Single vertical MVP slice for Phase 1; future phases can expand the scope without locking the current hardening work.
 
 ## Phases
 
@@ -12,21 +16,21 @@ Brownfield hardening milestone to make the flagship character (Luna) feel consis
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Character Fidelity Hardening** - Apply ST patterns to make Luna reliably stay in character with strong visual/emote emergence; validate formats remain open for multi-char and Civitai
+- [ ] **Phase 1: Character Fidelity Hardening** - Apply ST patterns to make characters reliably stay in character with strong visual/emote emergence; validate formats remain open for multi-char, story-driven features, Civitai, and GIF evolution
 
 ## Phase Details
 
 ### Phase 1: Character Fidelity Hardening
-**Goal**: Luna feels more consistently alive with strong visual/emote emergence (personality holds across turns, visible face is referable in-character, model chooses contextually appropriate expressions via `[emote: name]` tags); emote/character formats remain clean, documented, and open for future multi-character and Civitai work.
+**Goal**: Characters feel more consistently alive with strong visual/emote emergence (personality holds across turns, visible face/LED is referable in-character, model chooses contextually appropriate expressions via `[emote: name]` tags); emote/character formats remain clean, documented, and open for future multi-character, immersive story-driven, famous/IP, and GIF/animated work.
 **Mode:** mvp
 **Depends on**: Nothing (first phase; brownfield — core architecture, emote runtime, custom emote creator UI, and basic prompt enforcement already shipped and working)
 **Requirements**: CHAR-01, CHAR-02, CHAR-03, CHAR-04, CHAR-05, CHAR-06, PORT-01
 **Success Criteria** (what must be TRUE):
-  1. In extended conversation (10+ turns), Luna's responses consistently reflect the defined personality (warm, direct, empowering, curious, consent-focused) without drifting into generic assistant behavior or breaking character.
+  1. In extended conversation (10+ turns), responses consistently reflect the defined personality (warm, direct, empowering, curious, consent-focused) without drifting into generic assistant behavior or breaking character.
   2. Model outputs a valid `[emote: <name>]` tag as the exact last line on the vast majority of responses (e.g., ≥95% in a 20-turn capture); tag resolves to a known emote (builtin or custom) and triggers the corresponding image swap + lip-sync.
-  3. User can reference Luna's visible face, image, expression, or LED ("I see your LED is blue", "your expression changed") and Luna responds naturally in-character about her current visual/emotive state, maintaining immersion.
+  3. User can reference the visible face, image, expression, or LED in-character ("I see your LED is blue", "your expression changed") and the character responds naturally about its current visual/emotive state, maintaining immersion.
   4. Emote choices are contextually appropriate across emotional shifts in a conversation (playful → serious → affectionate); the model does not default to a single emote regardless of content.
-  5. Emote definition (emotes.json schema + per-emote entries) and character card (luna-character.json Tavern v3) formats are documented (EMOTE_GUIDE or equivalent up-to-date), fully describe the structure (name, keywords, color, closed/open PNG pairs, Tavern fields), and include explicit statements that the formats are designed to support additional characters and Civitai card/expression pack/app connections without core rewrites.
+  5. Emote definition (emotes.json schema + per-emote entries) and character card (Tavern v3) formats are documented (EMOTE_GUIDE or equivalent up-to-date), fully describe the structure (name, keywords, color, closed/open PNG pairs, Tavern fields), and include explicit statements that the formats are designed to support additional characters, story-driven features, famous/IP characters, and future GIF/animated expression packs (via Civitai or other) without core rewrites.
 **Plans**: TBD
 
 Plans:
@@ -42,3 +46,14 @@ Phases execute in numeric order: 1 → 2 → ...
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Character Fidelity Hardening | 0/TBD | Not started | - |
+
+## Future Vision (Platform Ambition)
+
+Beyond Phase 1 (the hardening foundation that makes the visual layer reliable):
+
+- Immersive story-driven characters (narrative consistency, long-term memory, branching stories)
+- Famous / IP characters (accurate personalities + visuals for well-known figures and licensed IPs; "even the famous ones will kill it")
+- Roadmap to GIFs / animated expressions (evolve from static PNG mouth pairs to full animated emotes and expression packs for superior lip-sync, emotional presence, and immersion)
+- Multi-character platform with Civitai asset integration (cards, GIF/expression packs, discovery)
+
+The current 1-phase structure keeps Phase 1 focused and deliverable. Future phases can be inserted as decimal or subsequent integers once the visual embodiment foundation is solid. This directly supports capturing the dominant roleplay segment of the AI market with the missing "see and hear reacting in real time" layer.

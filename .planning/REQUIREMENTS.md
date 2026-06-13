@@ -1,11 +1,11 @@
 # Requirements: Luna (Local Visual AI Companion)
 
 **Defined:** 2026-06-14
-**Core Value:** A companion that feels consistently alive: personality that holds across turns, a visible face the user can see/refer to, and expressions the model itself decides and that users can extend — all locally.
+**Core Value:** The roleplay experience you can *see and hear* reacting in real time — the visual and vocal embodiment layer that pure text companions lack. Personality that holds, a visible character the user can refer to, expressions the model itself decides, and user-extensible visuals — all local and story-immersive.
 
 ## v1 Requirements
 
-Requirements for initial hardening milestone. Focused on making the backend model reliably stay in character and let Luna's personality + visual/emote behavior emerge strongly, using SillyTavern best practices, while preserving the shipped emote runtime + creator UI and keeping formats open for future multi-character + Civitai work.
+Requirements for initial hardening milestone. Focused on making the backend model reliably stay in character and let Luna's personality + visual/emote behavior emerge strongly, using SillyTavern best practices. This is the foundation that makes immersive story-driven characters and famous IPs "kill it" with the visual layer.
 
 ### Character Fidelity & Visual/Emote Emergence (Hardening)
 
@@ -18,35 +18,49 @@ Requirements for initial hardening milestone. Focused on making the backend mode
 
 ### Portability & Future Openness (Non-Functional for v1)
 
-- [ ] **PORT-01**: Ensure emote/character definition formats (JSON structure with name/keywords/color + closed/open image pairs, Tavern-style card) remain clean, documented, and extensible so additional characters and Civitai card/expression pack/app connections can be added without core rewrites
+- [ ] **PORT-01**: Ensure emote/character definition formats (JSON structure with name/keywords/color + closed/open image pairs, Tavern-style card) remain clean, documented, and extensible so additional characters, story-driven features, and Civitai card/expression pack/app connections (including future GIF workflows) can be added without core rewrites
 
 ## v2 Requirements
 
-Deferred (acknowledged for later roadmap).
+Deferred (acknowledged for later roadmap). These build on the v1 hardening foundation to deliver the full product vision: immersive story-driven roleplay with the visual embodiment layer.
 
-### Multi-Character Support
+### Immersive Story-Driven Characters
 
-- **MULTI-01**: Support switching between multiple characters (each with own card, emote set, and visual assets)
-- **MULTI-02**: Shared or per-character settings for voice, prompt overrides, and emote behavior
+- **STORY-01**: Support for long-term narrative consistency, character memory across sessions, and story state tracking (e.g., via enhanced lorebooks or dedicated memory systems)
+- **STORY-02**: Tools or card extensions for branching story elements, world-building, and plot-aware responses while maintaining visual/emote reactivity
+- **STORY-03**: Multi-scene / multi-arc character experiences where the visual state (emotes, expressions) evolves with the story
 
-### Civitai Ecosystem Integration
+### Famous / IP Characters
 
-- **CIV-01**: Import character cards and/or expression packs directly from Civitai
-- **CIV-02**: Export Luna (or other) cards + emote image sets in Civitai-compatible format
-- **CIV-03**: Optional generative expression images using Civitai models / LoRAs (beyond user-provided static pairs)
+- **IP-01**: Support for well-known characters (famous people, fictional IPs) with accurate personality, voice style, and visual representation
+- **IP-02**: Asset pipelines (via Civitai or similar) for generating consistent images/GIFs for famous characters while respecting the emote + lip-sync system
+- **IP-03**: Licensing / usage guardrails and documentation for commercial or public deployment of IP-based characters
 
-## Out of Scope
+### Animated Expression / GIF Support (Roadmap to GIFs)
+
+- **GIF-01**: Replace or augment static PNG closed/open mouth pairs with animated GIFs or sprite sequences for superior lip-sync and emotional expression during TTS playback
+- **GIF-02**: User-extensible animated emote system (GIF upload / pack support in the creator UI, with the same keyword + tag control)
+- **GIF-03**: Civitai integration hooks for discovering / importing pre-made GIF expression packs and mapping them to the [emote: name] system
+- **GIF-04**: Performance considerations for animated assets (loading, caching, fallback to static PNGs)
+
+### Multi-Character Platform
+
+- **MULTI-01**: Support switching between multiple characters (each with own card, emote set / GIF pack, and visual assets)
+- **MULTI-02**: Shared or per-character settings for voice, prompt overrides, story state, and emote behavior
+- **MULTI-03**: Platform-level features for managing a library of story-driven or famous characters
+
+## Out of Scope (v1)
 
 Explicitly excluded for this initialization / first milestone. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| Full multi-character implementation or switching UI | Roadmap explicitly left open; v1 focuses on hardening one flagship (Luna) |
-| Direct Civitai app connection, import/export code, or expression pack integration | Formats kept portable/adaptable as non-functional; actual work deferred |
-| Switching from model-driven tag to pure classifier-based expressions (or vice-versa) | Current agency design is kept and strengthened; hybrid noted as possible future |
-| Generative (AI-created) emote images | Current system is user-provided static PNG pairs with lip-sync |
-| Non-local primary voice or LLM | Local-first (LocalSoundsAPI + local backends) remains core constraint |
+| Full multi-character implementation or switching UI | Roadmap explicitly left open; v1 focuses on hardening the visual embodiment foundation for one flagship (extendable later) |
+| Direct Civitai app connection, card import/export, GIF pack integration, or story tools | Formats kept portable/adaptable as non-functional; actual implementation deferred |
+| Generative expression images or full GIF animation | Current system is user-provided static PNG pairs with lip-sync; roadmap to animated/GIF support |
+| Cloud-only or non-local voice or LLM paths as primary | Local-first (LocalSoundsAPI + local backends) remains core constraint |
 | Mobile companion or non-desktop packaging | Out of current brownfield scope |
+| Licensing, commercial distribution, or public IP character hosting | Legal/commercial considerations deferred until after technical foundation |
 
 ## Traceability
 
@@ -70,4 +84,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 ---
 
 *Requirements defined: 2026-06-14*
-*Last updated: 2026-06-14 after initial definition (hardening scope from ST patterns + user direction for multi-char + Civitai openness)*
+*Last updated: 2026-06-14 after user insight on roleplay market + visual embodiment layer + immersive story-driven characters + famous IPs + roadmap to GIFs*
