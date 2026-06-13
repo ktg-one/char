@@ -1,0 +1,16 @@
+{
+  "custom": [
+    {
+      "name": "test-emote",
+      "keywords": [
+        "test",
+        "example"
+      ],
+      "color": "#FF0000",
+      "images": {
+        "closed": "/static/images/custom/test-emote-mouth-closed.png",
+        "open": "/static/images/custom/test-emote-mouth-open.png"
+      }
+    }
+  ]
+}
