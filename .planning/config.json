@@ -77,7 +77,7 @@
   "hooks": {
     "context_warnings": true
   },
-  "project_code": null,
+  "project_code": "char",
   "phase_naming": "sequential",
   "agent_skills": {},
   "claude_md_path": "./CLAUDE.md",
@@ -90,5 +90,13 @@
   "granularity": "standard",
   "intel": {
     "enabled": true
+  },
+  "mempalace": {
+    "enabled": true,
+    "capture_artifacts": true,
+    "mirror_kg": true,
+    "recall_on_discuss": true,
+    "recall_on_plan": true,
+    "wing": "char"
   }
 }
