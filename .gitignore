@@ -1,0 +1,41 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local / agent tooling (keep out of public repo)
+.claude/
+.serena/
+mcps/
+terminals/
+screenshots/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dev-only character cards (IP / NSFW test — not for public builds)
+companion-python/asuka-character.json
+
+# Per-machine state (sprite picks, XP, local paths)
+companion-python/data/characters.json
+companion-python/data/familiarity.json
+companion-python/data/sprite_maps.json
+companion-python/data/system_prompt.txt
+
+# Large external assets — never commit
+*.mp4
+*.webm
+
+# Windows launchers (use WSL scripts instead)
+Launch-Luna.bat
+
+# Chub card source exports (reference only — mirrored card is luna-character.json)
+main_*_spec_v2.json

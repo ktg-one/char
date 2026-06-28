@@ -1,0 +1,47 @@
+{
+  "mcpServers": {
+    "agentmemory": {
+      "command": "npx",
+      "args": ["-y", "@agentmemory/mcp"],
+      "env": {
+        "AGENTMEMORY_URL": "http://127.0.0.1:3111"
+      }
+    },
+    "headroom": {
+      "command": "headroom",
+      "args": ["mcp", "serve"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
+    },
+    "serena": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--project-from-cwd",
+        "--context",
+        "claude-code"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "jcodemunch": {
+      "command": "uvx",
+      "args": ["jcodemunch-mcp"]
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"]
+    },
+    "codebase-memory": {
+      "command": "codebase-memory-mcp",
+      "args": []
+    }
+  }
+}

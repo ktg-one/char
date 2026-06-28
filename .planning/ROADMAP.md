@@ -45,7 +45,20 @@ Phases execute in numeric order: 1 → 2 → ...
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Character Fidelity Hardening | 0/TBD | Not started | - |
+| 1. Character Fidelity Hardening | 0/TBD | In progress (infra slice shipped 2026-06-28) | - |
+
+### 2026-06-28 infra slice (pre-plan, shipped)
+
+Delivered outside formal GSD plans — launch + visual layer wiring for WSL handoff:
+
+- Luna-only fresh install bootstrap (`characters.example.json`, default UI character)
+- Expression resolve chain: `emotes.json` custom → `sprite_map` → `data/characters/Luna/` → defaults
+- Pick pics UI: Emotions vs Scenes optgroups, modal scroll fix
+- `scripts/start.sh` / `test.sh` (pytest then `app.py`); `mcp-install-wsl.sh`
+- Repo `.mcp.json` + `config/hermes.example.yaml` (agentmemory spine)
+- 25 pytest pass; Luna custom `.jpeg` assets + `luna-character.json` card mirror (CHAR-03 partial)
+
+**Next:** `/gsd-plan-phase 1` for PHI, mes_example expansion, and model compliance validation (CHAR-01..06).
 
 ## Future Vision (Platform Ambition)
 

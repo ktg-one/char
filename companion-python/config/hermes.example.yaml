@@ -1,0 +1,27 @@
+# Copy to ~/.hermes/config.yaml (or merge mcp_servers block into existing config).
+# Hermes = agentmemory spine — not an LLM. Works on Claude, Grok, Codex when MCP is wired.
+
+mcp_servers:
+  agentmemory:
+    command: npx
+    args:
+      - -y
+      - '@agentmemory/mcp'
+
+memory:
+  provider: agentmemory
+
+model:
+  provider: ollama-launch
+  base_url: http://127.0.0.1:11434/v1
+  default: Qwopus
+
+providers:
+  ollama-launch:
+    name: Ollama
+    api: http://127.0.0.1:11434/v1
+    default_model: Qwopus
+
+toolsets:
+  - hermes-cli
+  - web

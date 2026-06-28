@@ -37,7 +37,7 @@ body {
 
 .chat-container {
     width: 100%;
-    max-width: 800px;
+    max-width: 960px;
     background-color: var(--container-background);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -57,35 +57,278 @@ body {
     border-bottom: 1px solid var(--border-color);
 }
 
-.character-viewer {
-    text-align: center;
-    padding: 1rem;
+.main-content {
     display: flex;
+    flex: 1;
+    gap: 1rem;
+    min-height: 0;
+    padding: 0.5rem 1rem;
+    align-items: stretch;
+}
+
+.chat-log {
+    flex: 1;
+    min-height: 0;
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.75rem;
+    padding-left: 0.25rem;
+}
+
+.character-viewer {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
+    width: 340px;
+    height: 100%;
+    gap: 0.5rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.character-select {
+    background: var(--input-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.character-select option:disabled {
+    color: #888;
+}
+
+.familiarity-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.65);
+    margin-left: 0.25rem;
+}
+
+.familiarity-track {
+    width: 64px;
+    height: 6px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.familiarity-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #8A2BE2, #00FFFF);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+.emote-item.locked {
+    opacity: 0.45;
+    filter: grayscale(0.6);
+}
+
+.emote-item.locked .lock-req {
+    font-size: 0.62rem;
+    color: #ffb347;
+}
+
+.level-toast {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: #16213e;
+    border: 1px solid #8A2BE2;
+    color: #fff;
+    padding: 0.65rem 1rem;
+    border-radius: 10px;
+    z-index: 2000;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    animation: fadeSlideIn 0.35s ease;
+}
+
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.expression-badge {
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: rgba(0,0,0,0.25);
+}
+
+.portrait-control-hint {
+    font-size: 0.78rem;
+    opacity: 0.85;
+    margin: 0 0 0.65rem 0;
+    padding: 0.45rem 0.55rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    line-height: 1.45;
+}
+
+.assign-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+}
+
+.assign-toolbar select {
+    flex: 1;
+    min-width: 140px;
+    background: var(--input-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
+}
+
+.assign-grid .emote-item.assigned {
+    outline: 2px solid #00FFFF;
+    outline-offset: 2px;
+}
+
+.assign-grid .assign-badge {
+    font-size: 0.6rem;
+    color: #00FFFF;
+    margin-top: 0.2rem;
+}
+
+.emote-tabs {
+    display: flex;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+}
+
+.emote-tab {
+    flex: 1;
+    background: #16213e;
+    border: 1px solid #333;
+    color: #aaa;
+    border-radius: 8px;
+    padding: 0.45rem 0.5rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.emote-tab.active {
+    color: #fff;
+    border-color: var(--primary-accent);
+    background: rgba(138, 43, 226, 0.2);
+}
+
+.emote-hint {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+}
+
+.emote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.5rem;
+}
+
+.emote-grid .emote-item {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    margin: 0;
+    padding: 0.5rem;
+}
+
+.emote-grid .emote-item img {
+    width: 100%;
+    height: 88px;
+    object-fit: cover;
+    margin: 0 0 0.35rem 0;
+    border-radius: 6px;
+}
+
+.gallery-grid .emote-item img {
+    height: 120px;
+}
+
+.emote-upload-btn {
+    width: 100%;
+    margin-top: 0.35rem;
+    font-size: 0.68rem;
+    padding: 0.3rem 0.4rem;
+    border-radius: 6px;
+    border: 1px solid rgba(138, 43, 226, 0.45);
+    background: rgba(138, 43, 226, 0.15);
+    color: #e8d8ff;
+    cursor: pointer;
+}
+
+.emote-upload-btn:hover {
+    background: rgba(138, 43, 226, 0.3);
+}
+
+#emote-form.emote-form {
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(138, 43, 226, 0.35);
+}
+
+.emote-form-hint {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.45;
 }
 
 .led-ring {
     position: relative;
-    width: 600px;
-    height: 600px;
-    border-radius: 16px;
-    padding: 10px;
+    width: 310px;
+    height: 520px; /* taller to use the vertical room on the right */
+    max-height: 82%;
+    border-radius: 12px;
+    padding: 6px;
     background: radial-gradient(circle, rgba(0,0,0,0) 65%, rgba(255,255,255,0.03) 100%);
-    border: 6px solid var(--primary-accent);
-    box-shadow: 0 0 25px var(--primary-accent);
+    border: 4px solid var(--primary-accent);
+    box-shadow: 0 0 18px var(--primary-accent);
     transition: border-color 0.8s ease, box-shadow 0.8s ease;
     display: flex;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
+    flex-shrink: 0;
 }
 
-.led-ring #character-image {
+.led-ring #character-image,
+.led-ring #character-video {
     width: 100%;
     height: 100%;
     border-radius: 10px;
     object-fit: cover;
+    object-position: center top; /* better framing for taller portrait orientation */
+}
+
+.led-ring #character-video {
+    display: none;
 }
 
 /* LED thinking (flickering/cycling hues) animation */
@@ -113,15 +356,44 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
-#status {
-    text-align: center;
-    padding: 1.5rem;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    flex-grow: 1;
+.chat-log {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 0.75rem 1rem;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 120px; /* ensure at least a usable viewport even with large character head */
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+
+.message {
+    max-width: 85%;
+    padding: 0.65rem 1rem;
+    border-radius: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.message.user {
+    align-self: flex-end;
+    background-color: var(--input-background);
+    border: 1px solid var(--border-color);
+}
+
+.message.assistant {
+    align-self: flex-start;
+    background-color: rgba(138, 43, 226, 0.12);
+    border: 1px solid var(--primary-accent);
+}
+
+.message .sender {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    margin-bottom: 2px;
+    display: block;
 }
 
 .chat-input-area {
@@ -137,9 +409,12 @@ body {
     color: var(--text-color);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 0.8rem;
+    padding: 0.4rem 0.5rem;
     font-family: 'Inter', sans-serif;
     height: 50px;
+    font-size: 0.8rem;
+    max-width: 160px;
+    flex-shrink: 0;
 }
 
 #text-input {
@@ -155,6 +430,13 @@ body {
     line-height: 1.5;
     max-height: 120px;
     overflow-y: auto;
+}
+
+/* Make voice select compact so it doesn't dominate the typing box */
+#voice-select {
+    max-width: 140px !important;
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.4rem !important;
 }
 
 #text-input:focus {
@@ -276,6 +558,9 @@ body {
 
 .modal.open {
     display: flex;
+    padding: 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .modal-content {
@@ -284,10 +569,14 @@ body {
     border-radius: 12px;
     width: 90%;
     max-width: 500px;
+    max-height: min(90vh, calc(100dvh - 2rem));
     padding: 2rem;
     position: relative;
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     color: var(--text-color);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .close-button {
@@ -417,9 +706,10 @@ body {
 #emote-modal .modal-content {
     background: #1a1a2e;
     border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 80vh;
+    width: 92%;
+    max-width: min(720px, 96vw);
+    max-height: min(90vh, calc(100dvh - 2rem));
+    padding: 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -448,8 +738,28 @@ body {
 }
 
 #emote-modal .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
     padding: 20px;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+#emote-modal .emote-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #1a1a2e;
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.5rem;
+}
+
+#emote-modal .portrait-control-hint {
+    position: sticky;
+    top: 2.6rem;
+    z-index: 1;
+    background: #1a1a2e;
 }
 
 /* Emote List */

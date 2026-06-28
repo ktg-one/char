@@ -1,15 +1,93 @@
 {
   "custom": [
     {
-      "name": "test-emote",
-      "keywords": [
-        "test",
-        "example"
-      ],
-      "color": "#FF0000",
+      "name": "neutral",
+      "keywords": ["neutral", "calm", "okay", "fine", "tired"],
+      "color": "#00FFFF",
       "images": {
-        "closed": "/static/images/custom/test-emote-mouth-closed.png",
-        "open": "/static/images/custom/test-emote-mouth-open.png"
+        "closed": "/static/images/custom/neutral-mouth-closed.jpeg",
+        "open": "/static/images/custom/neutral-mouth-closed.jpeg"
+      }
+    },
+    {
+      "name": "joy",
+      "keywords": ["happy", "joy", "glad", "pleased", "smile", "great", "cheerful"],
+      "color": "#FFD700",
+      "images": {
+        "closed": "/static/images/custom/happy-mouth-closed.jpeg",
+        "open": "/static/images/custom/happy-mouth-open.jpeg"
+      }
+    },
+    {
+      "name": "sadness",
+      "keywords": ["sad", "down", "upset", "sorry", "cry", "hurt", "grief"],
+      "color": "#4169E1",
+      "images": {
+        "closed": "/static/images/custom/sad-mouth-closed.jpeg",
+        "open": "/static/images/custom/sad-mouth-closed.jpeg"
+      }
+    },
+    {
+      "name": "excitement",
+      "keywords": ["excited", "wow", "yay", "thrilled", "pumped"],
+      "color": "#FF8C00",
+      "images": {
+        "closed": "/static/images/custom/happy.jpeg",
+        "open": "/static/images/custom/excited-mouth-open.jpeg"
+      }
+    },
+    {
+      "name": "anger",
+      "keywords": ["angry", "mad", "furious", "annoyed", "rage"],
+      "color": "#FF4500",
+      "images": {
+        "closed": "/static/images/custom/angry-mouth-closed.jpeg",
+        "open": "/static/images/custom/angry-mouth-closed.jpeg"
+      }
+    },
+    {
+      "name": "surprise",
+      "keywords": ["surprised", "shocked", "amazed", "unexpected"],
+      "color": "#DA70D6",
+      "images": {
+        "closed": "/static/images/custom/wink.jpeg",
+        "open": "/static/images/custom/surprised-mouth-open.jpeg"
+      }
+    },
+    {
+      "name": "confusion",
+      "keywords": ["confused", "puzzled", "lost", "uncertain", "huh"],
+      "color": "#9370DB",
+      "images": {
+        "closed": "/static/images/custom/confused-mouth-closed.jpeg",
+        "open": "/static/images/custom/confused-mouth-closed.jpeg"
+      }
+    },
+    {
+      "name": "desire",
+      "keywords": ["flirty", "tease", "wink", "playful", "seductive", "desire"],
+      "color": "#FF69B4",
+      "images": {
+        "closed": "/static/images/custom/flirty.jpeg",
+        "open": "/static/images/custom/flirty.jpeg"
+      }
+    },
+    {
+      "name": "pride",
+      "keywords": ["confident", "bold", "self-assured", "proud"],
+      "color": "#FF6347",
+      "images": {
+        "closed": "/static/images/custom/confident.jpeg",
+        "open": "/static/images/custom/confident.jpeg"
+      }
+    },
+    {
+      "name": "embarrassment",
+      "keywords": ["shy", "blush", "embarrassed", "bashful"],
+      "color": "#FFB6C1",
+      "images": {
+        "closed": "/static/images/custom/shy-mouth-closed.jpeg",
+        "open": "/static/images/custom/shy-mouth-closed.jpeg"
       }
     }
   ]

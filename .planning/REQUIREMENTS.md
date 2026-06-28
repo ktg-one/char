@@ -11,14 +11,14 @@ Requirements for initial hardening milestone. Focused on making the backend mode
 
 - [ ] **CHAR-01**: Adopt/strengthen SillyTavern-style Post-History Instructions (PHI — last in prompt, high priority) containing the core rules for staying in character as Luna, exact mandatory last-line `[emote: name]` format, visual ownership ("my face", "the image next to you", "your expression", LED ring), and key personality anchors
 - [ ] **CHAR-02**: Expand `mes_example` (and in-prompt examples) with multiple rich, demonstrative turns that *show* personality in action, natural in-character references to the visible face/image/LED/expression, correct `[emote: name]` tag usage, and emote choice tied to emotional context (few-shot learning for emergence)
-- [ ] **CHAR-03**: Refine the Luna Tavern v3 character card (description + personality fields) for more specific, vivid, expression-aware details so traits are observable in the visible face and behavior; pull a strong public card from Civitai/community as base/inspiration if it accelerates
+- [~] **CHAR-03**: Refine the Luna Tavern v3 character card (description + personality fields) for more specific, vivid, expression-aware details so traits are observable in the visible face and behavior; pull a strong public card from Civitai/community as base/inspiration if it accelerates — *partial: June Chub card mirrored to `luna-character.json` (2026-06-28); needs live model validation*
 - [ ] **CHAR-04**: Add Character's Note / Author's Note equivalent (or lightweight character lore) for persistent consistency anchors around visual awareness, emote behavior, and core personality that must not drift
 - [ ] **CHAR-05**: Apply positive framing, strategic repetition of key behaviors, and instruct-aware message construction (system + examples + history + PHI) when building prompts for local backends so models reliably follow the visual/emote rules and stay in character
 - [ ] **CHAR-06**: Keep the model-driven `[emote: name]` tag mechanism (character agency) as primary while strengthening it with the above; document possibility of hybrid (ST-style classifier fallback) in future
 
 ### Portability & Future Openness (Non-Functional for v1)
 
-- [ ] **PORT-01**: Ensure emote/character definition formats (JSON structure with name/keywords/color + closed/open image pairs, Tavern-style card) remain clean, documented, and extensible so additional characters, story-driven features, and Civitai card/expression pack/app connections (including future GIF workflows) can be added without core rewrites
+- [~] **PORT-01**: Ensure emote/character definition formats (JSON structure with name/keywords/color + closed/open image pairs, Tavern-style card) remain clean, documented, and extensible so additional characters, story-driven features, and Civitai card/expression pack/app connections (including future GIF workflows) can be added without core rewrites — *partial: `EMOTE_GUIDE.md`, `characters.example.json`, `sprite_maps.json` pattern, gitignored per-machine state (2026-06-28)*
 
 ## v2 Requirements
 

@@ -1,0 +1,97 @@
+# Luna Emote Image Generation Prompts
+# Use these with Grok Imagine (or similar AI image tools) to create consistent Luna character art.
+# Place generated images in: companion-python/static/images/custom/
+# Naming convention (required for the app):
+#   {emote-name}-mouth-closed.png   (resting face)
+#   {emote-name}-mouth-open.png     (for lip-sync animation while speaking)
+#
+# Then either:
+#   - Use the in-app Emotes modal (+ Add Custom Emote) to upload them, OR
+#   - Manually add entries to data/emotes.json (see examples below)
+#
+# The app's getImagePath() will automatically use custom emotes (by exact name match, case-insensitive)
+# and they take precedence over built-ins. This lets you "override" the locked built-in emotes
+# with your own pictures while keeping the same [emote: happy] etc. tags.
+
+## BASE CHARACTER PROMPT (copy this exactly for consistency across all images)
+High quality consistent character portrait of Luna: a beautiful young woman in her mid-20s with long wavy dark brown hair, warm intelligent hazel eyes, soft fair skin with a subtle natural glow, delicate expressive features, kind and empowering gentle presence, soft cinematic lighting, detailed face and hair, square 1:1 composition centered on face and shoulders, transparent background, photorealistic style with artistic touch suitable for UI avatar in glowing LED ring.
+
+## TEMPLATE FOR A NEW EMOTE (closed mouth version)
+[BASE CHARACTER PROMPT above]. [EMOTION] expression, [specific eye/mouth/eyebrow details for the emotion], mouth closed in a [subtle / warm / etc.] [emotion] expression.
+
+## TEMPLATE FOR LIP-SYNC OPEN MOUTH VERSION (for the same emotion)
+Edit this exact portrait of Luna to create the lip-sync speaking version for the same emotion: keep the EXACT same face, hair, eyes, skin tone, lighting, head position, expression intensity, emotion, and overall look. Only modify the mouth area to be naturally slightly open as if she is speaking or animated for lip sync, realistic teeth or tongue if it fits the emotion, high fidelity match to the original closed mouth version, transparent background, square 1:1, no other changes to the character.
+
+## CURRENT EMOTES + READY-TO-USE PROMPTS
+# These match the current emotes.json (including overrides for built-ins + the test-emote).
+# Generate the closed version first using the closed template, then the open version using the edit template on the closed image.
+
+### neutral
+Closed: [BASE] neutral calm relaxed expression, gentle closed mouth soft smile, serene and self-aware look.
+Open: Use the edit template above on your neutral-closed image.
+
+### happy
+Closed: [BASE] joyful happy expression, bright sparkling eyes, warm genuine smile, mouth closed in a happy expression.
+Open: Use the edit template above on your happy-closed image.
+
+### sad
+Closed: [BASE] sad empathetic expression, gentle downturned eyes, soft compassionate look, mouth closed in a subtle sad expression.
+Open: Use the edit template above on your sad-closed image.
+
+### excited
+Closed: [BASE] excited enthusiastic expression, wide bright eyes, big joyful smile, mouth closed in excitement.
+Open: Use the edit template above on your excited-closed image.
+
+### angry
+Closed: [BASE] angry intense expression, furrowed brows, tense determined eyes, mouth closed in a firm angry line.
+Open: Use the edit template above on your angry-closed image.
+
+### surprised
+Closed: [BASE] surprised shocked expression, wide open eyes, raised eyebrows, mouth closed in a small surprised o shape.
+Open: Use the edit template above on your surprised-closed image.
+
+### tired
+Closed: [BASE] tired weary expression, half-closed droopy eyes, exhausted look, mouth closed in a subtle tired expression.
+Open: Use the edit template above on your tired-closed image.
+
+### confused
+Closed: [BASE] confused puzzled expression, slightly tilted feel, questioning eyes, mouth closed in a small confused expression.
+Open: Use the edit template above on your confused-closed image.
+
+### test-emote (example custom)
+Closed: [BASE] playful mischievous expression, slight smirk, sparkling teasing eyes, mouth closed.
+Open: Use the edit template above on your test-emote-closed image.
+
+## TIPS FOR CREATING MORE
+- Always start with the exact BASE CHARACTER PROMPT for visual consistency.
+- Add "square 1:1", "transparent background", "centered on face and shoulders".
+- For lip-sync pairs: generate closed first, then edit the image (not text prompt) to open the mouth while keeping everything else identical.
+- Recommended size: ~600x600 px (matches the current UI assets).
+- After generating:
+  1. Rename files to {name}-mouth-closed.png and {name}-mouth-open.png
+  2. Copy into companion-python/static/images/custom/
+  3. Either use the Emotes UI to add them, or append to data/emotes.json like this:
+
+{
+  "name": "playful",
+  "keywords": ["playful", "tease", "mischievous", "wink"],
+  "color": "#FF69B4",
+  "images": {
+    "closed": "/static/images/custom/playful-mouth-closed.png",
+    "open": "/static/images/custom/playful-mouth-open.png"
+  }
+}
+
+- The model prompt (in app.py LUNA_INSTRUCTION and character.py) automatically lists current custom emote names, so new ones will be available to Luna without code changes.
+- To override a built-in (e.g. make "happy" use your new art), just create a custom with the exact name "happy".
+
+## FILE LOCATIONS
+- Prompts: this file (companion-python/luna_emote_prompts.txt)
+- Images: companion-python/static/images/custom/
+- Emote config: companion-python/data/emotes.json
+- UI logic: companion-python/static/app.js (getImagePath + renderEmoteList)
+- Backend: companion-python/app.py (create_emote, upload_emote_images, determine_emotion)
+
+Copy-paste the BASE + emotion modifiers into Grok Imagine (or your preferred tool) to create more emotes whenever you want. The current set (neutral through confused + test-emote) is already attached and working.
+
+Generated with Grok Imagine for maximum consistency.

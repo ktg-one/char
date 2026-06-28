@@ -23,6 +23,10 @@ The roleplay experience you can *see and hear* reacting in real time — the vis
 - ✓ Local-first stack with vendored/portable models and tools (PyTorch + specific inference libs, vendored fish-speech/ACE-Step, portable embedded Python 3.11, ffmpeg/rubberband, Whisper for verification/transcription)
 - ✓ Basic history handling (recent turns sent for context), custom system prompt overrides, and separation of TTS voice provider (LocalSoundsAPI primary)
 - ✓ Existing emote data + tests (companion-python/data/emotes.json with examples/overrides; test_emotes_api.py covering CRUD, duplicates, builtin conflicts)
+- ✓ Luna release wiring (2026-06-28): `characters.py` + `sprite_maps.py`, Pick pics (Emotions/Scenes), multi-source asset resolve, `.jpeg` custom images, 25-test pytest suite
+- ✓ WSL launch path: `scripts/start.sh`, `scripts/test.sh`, `scripts/mcp-install-wsl.sh`; `.env.example` (secrets gitignored)
+- ✓ MCP dev manifest: repo-root `.mcp.json` (agentmemory, headroom, serena, context7, etc.) + `config/hermes.example.yaml`
+- ✓ Luna Tavern v3 card mirror (`luna-character.json`) from June Chub reference — partial CHAR-03
 
 ### Active
 
@@ -47,7 +51,7 @@ The roleplay experience you can *see and hear* reacting in real time — the vis
 
 ## Context
 
-Brownfield project in `D:\projects\silly\char` (git repo). Existing detailed codebase map in `.planning/codebase/` (ARCHITECTURE, STACK, STRUCTURE, etc.) from prior `/gsd-map-codebase`. Recent prior exploration in `docs/plans/2026-06-10-emote-creation-design.md` + `...-plan.md` (largely implemented as the current custom emote UI and supporting backend).
+Brownfield project in `C:\Users\kevin\silly\char` (git: `ktg-one/char`); WSL target `~/projects/char`. Existing detailed codebase map in `.planning/codebase/` (ARCHITECTURE, STACK, STRUCTURE, etc.) from prior `/gsd-map-codebase`. Recent prior exploration in `docs/plans/2026-06-10-emote-creation-design.md` + `...-plan.md` (largely implemented as the current custom emote UI and supporting backend).
 
 Heavy local ML focus: PyTorch ecosystem, specific TTS and music models (many vendored with their own inference stacks), Whisper, local LLM backends. Dual runtime (main API server + visual companion). Vanilla JS + Jinja frontend. Windows-centric portable deployment (Launch-*.bat, embedded Python). Emote images in static/custom with mouth pairs for animation. Brain/system prompts and settings presets for customization.
 
@@ -103,4 +107,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-*Last updated: 2026-06-14 after user insight on roleplay market + visual embodiment layer + story-driven / famous characters / GIF roadmap direction*
+*Last updated: 2026-06-28 — infra slice shipped (Luna wiring, WSL scripts, MCP manifest); Phase 1 prompt hardening still active*

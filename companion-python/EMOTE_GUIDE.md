@@ -1,56 +1,120 @@
-# 🎭 Luna Emoting & Expression Guide
+# Luna Expressions (SillyTavern-compatible)
 
-Luna is now equipped with a dynamic facial expression system (emotes). The system classifies the emotional tone of Luna's response and dynamically changes her facial expression and lip-syncing frames.
+Luna uses the same expression model as [SillyTavern Character Expressions](https://docs.sillytavern.app/extensions/expression-images/):
 
----
+- **28 Go-Emotions labels** (`joy`, `desire`, `sadness`, `neutral`, …)
+- **Flat sprite folders** per character: `data/characters/Luna/joy.png`
+- **ZIP sprite pack import** (Emotes modal → Upload sprite pack)
+- **Local text classification** when the model omits `[emote: tag]` (same labels as ST's distilbert go-emotions)
+- **ST default emoji fallbacks** in `static/img/default-expressions/` when no custom art exists
 
-## 🛠️ How it Works
-
-The emote system integrates backend classification with dynamic frontend asset loading:
-
-1. **Backend Classification (`app.py`)**:
-   - The helper function `determine_emotion(message, response)` scans both the user's message and Luna's response for emotional keywords.
-   - It outputs one of the following emote strings: `'neutral'`, `'happy'`, or `'sad'`.
-   - The `/chat` endpoint returns this emotion string in the JSON payload under the key `"emote"`.
-
-2. **Frontend Loading (`app.js`)**:
-   - The frontend extracts the `"emote"` attribute.
-   - While Luna is speaking, the lip-syncing animation alternates between the closed and open mouth states of the specific emote:
-     - **Happy**: `char-happy-mouth-closed.png` & `char-happy-mouth-open.png`
-     - **Sad**: `char-sad-mouth-closed.png` & `char-sad-mouth-open.png`
-   - **Fallback**: If an emote name is unknown or if the specific files are not provided, it falls back to the default `char-mouth-closed.png` and `char-mouth-open.png` assets seamlessly.
+Legacy tags still work: `[emote: happy]` → `joy`, `[emote: flirty]` → `desire`.
 
 ---
 
-## 🎨 Adding Expression Asset Files
+Luna also supports **lip-sync pairs** and **GIF/video** emotes on top of ST sprites.
 
-To add the expressions to the interface, place your custom png files in the `static/images/` directory:
+Custom emotes (with your own closed-mouth + open-mouth PNGs) take full precedence for both the resting face and real-time lip-sync animation while TTS plays.
 
-| Emote | Mouth Closed File Path | Mouth Open File Path | Description |
-|---|---|---|---|
-| **Neutral** (Default) | `static/images/char-mouth-closed.png` | `static/images/char-mouth-open.png` | Regular expression |
-| **Happy** | `static/images/char-happy-mouth-closed.png` | `static/images/char-happy-mouth-open.png` | Smiling / cheerful eyes and mouth |
-| **Sad** | `static/images/char-sad-mouth-closed.png` | `static/images/char-sad-mouth-open.png` | Soft, sympathetic, or downcast expression |
-
-> [!TIP]
-> Ensure the new asset files have exact transparent backgrounds and matching aspect ratios (600x600 px is the default design sizing) so the transition between expressions remains perfectly smooth.
+The model is instructed (in the system prompt + dynamic custom list) to always end every reply with exactly `[emote: yourname]` (last thing on its own line). The frontend parses the tag (or falls back to keyword matching) and switches the character image.
 
 ---
 
-## 🚀 Adding More Emotes
+## 🖼️ Adding Custom Images for Emotes (Recommended Way)
 
-If you want to add a new emote, e.g., `excited`:
+**Use the in-app Emotes manager (no code edits needed):**
 
-1. **Define keywords in `app.py`**:
-   Update `determine_emotion()` to return `'excited'`:
-   ```python
-   if any(w in message_lower or w in response_lower for w in ['excited', 'wow', 'amazing', 'hype']):
-       return 'excited'
-   ```
-2. **Add asset filenames**:
-   Drop `char-excited-mouth-closed.png` and `char-excited-mouth-open.png` into `static/images/`.
-3. **Update preload in `app.js`**:
-   Add `'excited'` to the preloading array on line 16:
-   ```javascript
-   ['neutral', 'happy', 'sad', 'excited'].forEach(emote => { ... });
-   ```
+1. Click the **Emotes** icon (✓-like button) in the header next to "Luna".
+2. In the modal, click **+ Add Custom Emote**.
+3. Fill in:
+   - **Emote Name** — this is what the model must output in the tag, e.g. `playful`, `smirk`, `blush`, or even override a built-in like `happy`.
+   - **Keywords** (optional, comma-separated) — words that can auto-trigger this emote if the model doesn't use the exact tag (e.g. `playful, tease, wink`).
+   - **Mouth Closed Image** — select your PNG (recommended ~600x600, transparent background).
+   - **Mouth Open Image** — the version with mouth open for lip-sync.
+   - **LED Color** (optional) — the ring glow color while this emote is active.
+4. Click **Save**.
+
+The two images are uploaded to `static/images/custom/{sanitized-name}-mouth-closed.png` (and open).
+
+They immediately appear in the emote list and will be used for the character viewer whenever that emote is active.
+
+You can create a custom with the **exact same name** as a built-in (happy, sad, excited, etc.) to give it completely different pictures while keeping the name the model already knows.
+
+---
+
+## 📁 Manual / Advanced Placement
+
+If you prefer to manage files directly:
+
+- Place your images in `companion-python/static/images/custom/`
+- Name them exactly: `yourname-mouth-closed.png` and `yourname-mouth-open.png` (use the same sanitization as secure_filename would).
+- Then use the Emotes modal → + Add Custom Emote (you can still fill the form; the upload step will be skipped if you pre-place the files, but the JSON entry is still required via the form for now).
+
+The `data/emotes.json` will contain entries like:
+
+```json
+{
+  "custom": [
+    {
+      "name": "playful",
+      "keywords": ["playful", "tease"],
+      "color": "#FF69B4",
+      "images": {
+        "closed": "/static/images/custom/playful-mouth-closed.png",
+        "open": "/static/images/custom/playful-mouth-open.png",
+        "gif": "/static/images/custom/playful.gif",
+        "speakGif": "/static/images/custom/playful-speak.gif",
+        "mp4": "/static/images/custom/playful.mp4",
+        "speakMp4": "/static/images/custom/playful-speak.mp4"
+      }
+    }
+  ]
+}
+```
+
+Customs are loaded on app start and also injected into the Luna system prompt so the model knows the exact names it can use in `[emote: ...]`.
+
+### Animated emotes (GIF / video)
+
+Add optional fields under `images`:
+
+| Field | When it plays |
+|-------|----------------|
+| `gif` | Resting loop (replaces static closed PNG) |
+| `speakGif` | While TTS speaks (falls back to `gif`) |
+| `mp4` / `webm` / `video` | Resting video loop |
+| `speakMp4` / `speakWebm` / `speakVideo` | Speaking video (falls back to resting video) |
+
+If a GIF or video is set, PNG lip-sync toggling is skipped — the clip carries the motion. Drop files in `static/images/custom/` and reference them in `data/emotes.json`.
+
+---
+
+## 🔄 How Images Are Chosen at Runtime
+
+- Model reply ends with `[emote: playful]` → tag wins (highest priority).
+- No tag but response/user message contains one of the keywords → custom emote wins.
+- Falls back to generic mouth pair for built-ins.
+- `getImagePath()` in `app.js` always checks custom list first (case-insensitive).
+
+Lip-sync (mouth open/closed alternation) and the resting face both use the emote's pair while speaking.
+
+---
+
+## 💡 Tips for Good Custom Images
+
+- Square (ideally 600x600 or same aspect as the default char-mouth-*.png).
+- Transparent background.
+- Consistent framing / eye position between closed and open so the switch doesn't jump.
+- The LED ring color can help differentiate emotes visually.
+
+The old manual "drop char-happy-*.png + edit Python/JS" method is obsolete — use the Emotes UI and custom entries instead.
+
+---
+
+## 🧪 Testing Your Custom Emote
+
+Send something like:
+- "Make a playful face" (if you set keywords)
+- Or ask Luna directly: "What do you want to emote next?" or "Can you show me your playful expression?"
+
+She should output the tag at the very end (per her instructions) and the image next to the chat will switch to your uploaded pair + animate the mouth during TTS (LocalSoundsAPI).

@@ -1,108 +1,112 @@
-import pytest
 import json
-import os
-import tempfile
-from app import app, load_emotes, save_emotes
+
+import pytest
+
+from app import app, save_emotes
+
 
 @pytest.fixture
-def client():
-    app.config['TESTING'] = True
+def client(tmp_path, monkeypatch):
+    """Isolate emotes.json so tests never wipe production sprites."""
+    emotes_file = tmp_path / "emotes.json"
+    monkeypatch.setattr("app.EMOTES_FILE", str(emotes_file))
+    app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
 
+
 @pytest.fixture
 def sample_emote():
-    return {
-        'name': 'test-emote',
-        'keywords': ['test', 'example'],
-        'color': '#FF0000'
-    }
+    return {"name": "test-emote", "keywords": ["test", "example"], "color": "#FF0000"}
+
 
 def test_get_emotes_empty(client):
-    """Test getting emotes when none exist"""
-    # Reset emotes.json
-    save_emotes({'custom': []})
-    
-    resp = client.get('/api/emotes')
+    save_emotes({"custom": []})
+
+    resp = client.get("/api/emotes")
     assert resp.status_code == 200
     data = resp.get_json()
-    assert 'custom' in data
-    assert len(data['custom']) == 0
+    assert "custom" in data
+    assert len(data["custom"]) == 0
+    assert "expressions" in data
+    assert len(data["expressions"]["labels"]) == 28
+
 
 def test_create_emote(client, sample_emote):
-    """Test creating a custom emote"""
-    # Reset
-    save_emotes({'custom': []})
-    
-    resp = client.post('/api/emotes',
-                       data=json.dumps(sample_emote),
-                       content_type='application/json')
+    save_emotes({"custom": []})
+
+    resp = client.post(
+        "/api/emotes", data=json.dumps(sample_emote), content_type="application/json"
+    )
     assert resp.status_code == 201
     data = resp.get_json()
-    assert data['name'] == 'test-emote'
-    assert data['keywords'] == ['test', 'example']
-    assert data['color'] == '#FF0000'
+    assert data["name"] == "test-emote"
 
-def test_create_emote_duplicate(client, sample_emote):
-    """Test creating duplicate emote fails"""
-    save_emotes({'custom': []})
-    
-    # Create first
-    resp1 = client.post('/api/emotes',
-                        data=json.dumps(sample_emote),
-                        content_type='application/json')
+
+def test_create_emote_upsert(client, sample_emote):
+    """Re-saving the same name updates in place (ST override / replace flow)."""
+    save_emotes({"custom": []})
+
+    resp1 = client.post(
+        "/api/emotes", data=json.dumps(sample_emote), content_type="application/json"
+    )
     assert resp1.status_code == 201
-    
-    # Try duplicate
-    resp2 = client.post('/api/emotes',
-                        data=json.dumps(sample_emote),
-                        content_type='application/json')
-    assert resp2.status_code == 400
 
-def test_create_emote_conflicts_builtin(client):
-    """Test creating emote with name conflicting with built-in"""
-    save_emotes({'custom': []})
-    
-    resp = client.post('/api/emotes',
-                       data=json.dumps({'name': 'happy', 'keywords': ['test']}),
-                       content_type='application/json')
-    assert resp.status_code == 400
+    updated = {**sample_emote, "color": "#00FF00", "keywords": ["updated"]}
+    resp2 = client.post(
+        "/api/emotes", data=json.dumps(updated), content_type="application/json"
+    )
+    assert resp2.status_code == 200
+    data = resp2.get_json()
+    assert data["color"] == "#00FF00"
+    assert data["keywords"] == ["updated"]
+
+
+def test_create_emote_overrides_builtin(client):
+    """Legacy/ST names can be overridden with custom visuals."""
+    save_emotes({"custom": []})
+
+    resp = client.post(
+        "/api/emotes",
+        data=json.dumps({"name": "joy", "keywords": ["test"]}),
+        content_type="application/json",
+    )
+    assert resp.status_code == 201
+    assert resp.get_json()["name"] == "joy"
+
 
 def test_delete_emote(client, sample_emote):
-    """Test deleting a custom emote"""
-    save_emotes({'custom': []})
-    
-    # Create
-    resp1 = client.post('/api/emotes',
-                        data=json.dumps(sample_emote),
-                        content_type='application/json')
-    assert resp1.status_code == 201
-    
-    # Delete
-    resp2 = client.delete('/api/emotes/test-emote')
-    assert resp2.status_code == 200
-    
-    # Verify deleted
-    resp3 = client.get('/api/emotes')
-    data = resp3.get_json()
-    assert len(data['custom']) == 0
+    save_emotes({"custom": []})
+
+    client.post(
+        "/api/emotes", data=json.dumps(sample_emote), content_type="application/json"
+    )
+    resp = client.delete("/api/emotes/test-emote")
+    assert resp.status_code == 200
+
+    data = client.get("/api/emotes").get_json()
+    assert len(data["custom"]) == 0
+
 
 def test_delete_builtin_emote(client):
-    """Test deleting built-in emote fails"""
-    resp = client.delete('/api/emotes/neutral')
+    resp = client.delete("/api/emotes/neutral")
     assert resp.status_code == 400
 
-def test_get_emotes(client, sample_emote):
-    """Test getting list of emotes"""
-    save_emotes({'custom': []})
-    
-    # Create
-    client.post('/api/emotes',
-                data=json.dumps(sample_emote),
-                content_type='application/json')
-    
-    # Get
-    resp = client.get('/api/emotes')
+
+def test_expression_labels(client):
+    resp = client.get("/api/expressions/labels")
+    assert resp.status_code == 200
     data = resp.get_json()
-    assert len(data['custom']) == 1
-    assert data['custom'][0]['name'] == 'test-emote'
+    assert "joy" in data["labels"]
+    assert data["fallback"] == "joy"
+
+
+def test_classify_expression(client):
+    resp = client.post(
+        "/api/expressions/classify",
+        data=json.dumps({"text": "I am so happy and grateful today!"}),
+        content_type="application/json",
+    )
+    assert resp.status_code == 200
+    label = resp.get_json()["label"]
+    assert label in {"joy", "gratitude", "excitement", "optimism", "love"}

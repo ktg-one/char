@@ -1,0 +1,13 @@
+{
+  "active": "Luna",
+  "characters": {
+    "Luna": {
+      "display_name": "Luna",
+      "card": "luna-character.json",
+      "sprite_source": "local",
+      "sprite_path": null,
+      "unlock_level": 0,
+      "content_unlocks": {}
+    }
+  }
+}
