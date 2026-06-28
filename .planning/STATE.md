@@ -83,7 +83,7 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-06-28 (WSL prep + Luna emote wiring)
-Stopped at: Companion launch-ready (25 pytest pass). MCP stack in repo `.mcp.json`. WSL install script at `companion-python/scripts/mcp-install-wsl.sh`. Committed and pushed 2026-06-28 — WSL: `git pull` then resume checklist below.
+Stopped at: Companion launch-ready (25 pytest pass). MCP stack in repo `.mcp.json`. WSL install script at `companion-python/scripts/mcp-install-wsl.sh`. Pushed `f0e8daa` (2026-06-28); history scrubbed of tracked `.env` — **rotate OpenAI key** if it was ever exposed.
 Resume file: `.planning/STATE.md` (this section) + repo-root `.mcp.json`
 
 ### 2026-06-28 handoff (read this first)
